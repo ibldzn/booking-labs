@@ -3,11 +3,11 @@ export const Login = () => {
     <div className="flex flex-col justify-center items-center bg-[#F7EAE4] h-screen">
       <img src="/logo-1.jpg" alt="logo" className="w-48 h-48" />
       <form className="flex flex-col gap-4 w-full h-full px-8 max-w-md">
-        <label htmlFor="email">Email</label>
+        <label htmlFor="username">Username</label>
         <input
-          type="email"
-          name="email"
-          id="email"
+          type="text"
+          name="username"
+          id="username"
           className="border-2 border-gray-500 rounded-md p-2"
         />
         <label htmlFor="password">Password</label>
