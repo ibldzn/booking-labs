@@ -1,14 +1,14 @@
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { Lab } from "./Lab";
+import { LabProps } from "./Lab";
 
 export interface LabsActivityProps {
-  labs: Lab[];
+  labs: LabProps[];
 }
 
 export const LabsActivity = ({ labs }: LabsActivityProps) => {
-  const [selectedLab, setSelectedLab] = useState<Lab | null>(null);
+  const [selectedLab, setSelectedLab] = useState<LabProps | null>(null);
 
   return (
     <div className="flex flex-col">
