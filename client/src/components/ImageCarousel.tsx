@@ -16,48 +16,50 @@ export const ImageCarousel = ({ images }: ImageCarouselProps) => {
   };
 
   return (
-    <div className="relative">
-      <div className="absolute flex items-center justify-center">
-        <button
-          className="bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center"
-          onClick={prevImage}
+    <div className="flex justify-center items-center">
+      <button
+        className="bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center mr-2"
+        onClick={prevImage}
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
 
-        <img className="w-full" src={images[currentImage]} alt="Product" />
+      <img
+        className="w-56 h-36 object-contain"
+        src={images[currentImage]}
+        alt="image"
+      />
 
-        <button
-          className="bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center"
-          onClick={nextImage}
+      <button
+        className="bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center ml-2"
+        onClick={nextImage}
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
     </div>
   );
 };
