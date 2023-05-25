@@ -4,11 +4,11 @@ const app = express();
 
 const PORT = process.env.PORT || 8081;
 
+app.use(express.json({ extended: false }));
+
 connectDB();
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello from server!" });
-});
+app.use("/api/v1", require("./routes/auth.route"));
 
 app.get("/labs", (req, res) => {
   res.json([
