@@ -3,6 +3,9 @@ const connectDB = async () => {
   const url = process.env.MONGO_CONNECTION_STRING;
   const options = {
     useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // useCreateIndex: true, // for mongoose 6.x
+    // useFindAndModify: false, // for mongoose 6.x
   };
 
   try {
