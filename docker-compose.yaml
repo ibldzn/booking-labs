@@ -4,9 +4,8 @@ services:
     image: mongo:4.4.18
     restart: always
     container_name: mongodb-labs
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+    env_file:
+      - ./server/.env
     ports:
       - 9000:27017
     volumes:
@@ -27,10 +26,10 @@ services:
   booking-labs-server:
     build: ./server
     container_name: booking-labs-server
+    env_file:
+      - ./server/.env
     ports:
       - 8081:8081
-    environment:
-      MONGO_CONNECTION_STRING: mongodb://root:root@mongodb:27017/booking-labs?authSource=admin
     volumes:
       - ./server:/app
 

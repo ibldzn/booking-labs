@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const { connectDB } = require("./config/mongodb.connection");
@@ -12,6 +14,7 @@ app.use(express.json({ extended: false }));
 connectDB();
 
 app.use("/api/v1", require("./routes/auth.route"));
+app.use("/api/v1", require("./routes/labs.route"));
 
 app.get("/labs", (req, res) => {
   res.json([
