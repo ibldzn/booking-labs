@@ -4,6 +4,13 @@ const User = require("../models/user.model");
 const register = async (req, res) => {
   try {
     const { username, name, password } = req.body;
+
+    if (await User.findOne({ username })) {
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ message: `Username '${username}' already exists` });
+    }
+
     const user = await User.create({
       username,
       name,
