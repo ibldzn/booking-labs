@@ -22,16 +22,18 @@ userSchema.set("toJSON", {
 });
 
 userSchema.pre("save", async function (next) {
-  const user = this;
-
-  if (!user.isModified("password")) {
+  if (!this.isModified("password")) {
     return next();
   }
 
-  user.password = await bcrypt.hash(user.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
 
   next();
 });
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 
