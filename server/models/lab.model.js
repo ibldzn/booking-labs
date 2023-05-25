@@ -13,8 +13,11 @@ const labSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  used_by: String,
-  images: [String],
+  images: {
+    type: [String],
+    required: false,
+    default: [],
+  },
 });
 
 const Lab = mongoose.model("Lab", labSchema);
