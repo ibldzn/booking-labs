@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Password must be at least 8 characters long"],
     select: false,
   },
+  klass: {
+    type: String,
+    required: [true, "Class is required"],
+  },
 });
 
 userSchema.set("toJSON", {
