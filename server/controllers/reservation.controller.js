@@ -79,7 +79,6 @@ const createReservation = async (req, res) => {
     });
     return res.status(StatusCodes.CREATED).json(reservation);
   } catch (err) {
-    console.log(err);
     return res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
   }
 };
@@ -94,7 +93,7 @@ const getActiveReservations = async (req, res) => {
       ],
     });
 
-    if (reservations?.length === 0) {
+    if (reservations.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ error: "No active reservations found" });
@@ -115,7 +114,7 @@ const getPastReservations = async (req, res) => {
       end_time: { $lt: currentTime },
     });
 
-    if (reservations?.length === 0) {
+    if (reservations.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ error: "No past reservations found" });
@@ -136,7 +135,7 @@ const getFutureReservations = async (req, res) => {
       start_time: { $gt: currentTime },
     });
 
-    if (reservations?.length === 0) {
+    if (reservations.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ error: "No future reservations found" });
