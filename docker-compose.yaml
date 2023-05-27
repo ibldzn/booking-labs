@@ -32,6 +32,8 @@ services:
       - 8081:8081
     volumes:
       - ./server:/app
+    depends_on:
+      - mongodb
 
   booking-labs-client:
     build: ./client
@@ -40,6 +42,8 @@ services:
       - 8080:8080
     volumes:
       - ./client:/app
+    depends_on:
+      - booking-labs-server
 
 volumes:
   mongodb-booking-labs:
