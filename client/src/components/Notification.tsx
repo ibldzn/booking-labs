@@ -12,12 +12,14 @@ export type NotificationType = "success" | "info" | "warning" | "error";
 interface NotificationProps {
   type?: NotificationType;
   message: string;
-  onClose: () => void;
+  timeout?: number;
+  onClose?: () => void;
 }
 
 export const Notification = ({
   type = "info",
   message,
+  timeout = 5000,
   onClose,
 }: NotificationProps) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -27,7 +29,7 @@ export const Notification = ({
 
     const timer = setTimeout(() => {
       closeNotification();
-    }, 5000);
+    }, timeout);
 
     return () => {
       clearTimeout(timer);
@@ -36,9 +38,9 @@ export const Notification = ({
 
   const closeNotification = () => {
     setIsVisible(false);
-    setTimeout(() => {
-      onClose();
-    }, 300);
+    if (onClose) {
+      setTimeout(onClose, 300);
+    }
   };
 
   const closeIcon = (
