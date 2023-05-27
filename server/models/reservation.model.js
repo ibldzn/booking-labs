@@ -14,7 +14,8 @@ const reservationSchema = new mongoose.Schema({
   },
   start_time: {
     type: Date,
-    required: true,
+    required: false,
+    default: Date.now,
   },
   end_time: {
     type: Date,
