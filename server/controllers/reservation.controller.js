@@ -38,17 +38,19 @@ const getReservationById = async (req, res) => {
 
 const createReservation = async (req, res) => {
   try {
-    let {
-      lab_id,
-      user_id,
-      start_time = Math.floor(Date.now() / 1000),
-      end_time,
-    } = req.body;
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    let { lab_id, start_time = nowSeconds, end_time } = req.body;
 
-    if (!lab_id || !user_id || !end_time) {
+    if (!lab_id || !end_time) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ error: "Missing required fields" });
+    }
+
+    if (start_time < nowSeconds) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: "Start time must be in the future" });
     }
 
     if (start_time >= end_time) {
@@ -73,7 +75,7 @@ const createReservation = async (req, res) => {
 
     const reservation = await Reservation.create({
       lab_id,
-      user_id,
+      user_id: req.session.userId,
       start_time,
       end_time,
     });
@@ -176,6 +178,14 @@ const deleteReservation = async (req, res) => {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ error: "Reservation not found" });
+    }
+
+    const userId = req.session.userId;
+    const reservationUserId = reservation.user_id.toString();
+    if (reservationUserId !== userId) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ error: "You are not authorized to delete this reservation" });
     }
 
     await reservation.deleteOne();
