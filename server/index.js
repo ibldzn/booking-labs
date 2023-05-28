@@ -34,7 +34,7 @@ const start = () => {
   app.use("/api/v1", require("./routes/reservation.route"));
   app.use("/api/v1", require("./routes/user.route"));
 
-  app.get("/laboran", (req, res) => {
+  app.get("/api/v1/laboran", (req, res) => {
     res.json([
       {
         name: "Teni Amalia",
