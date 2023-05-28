@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 8081;
 const start = () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(cookieParser(process.env.SESSION_SECRET_KEY));
   app.use(cors());
   app.use(
     session({
