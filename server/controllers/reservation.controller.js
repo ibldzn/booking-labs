@@ -85,14 +85,21 @@ const createReservation = async (req, res) => {
 
 const getActiveReservations = async (req, res) => {
   try {
+    const { labId } = req.params;
+
     const currentTime = new Date();
-    const reservations = await Reservation.find({
+    const query = Reservation.find({
       $and: [
         { start_time: { $lte: currentTime } },
         { end_time: { $gte: currentTime } },
       ],
     });
 
+    if (labId) {
+      query.where({ lab_id: labId });
+    }
+
+    const reservations = await query.exec();
     if (reservations.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -109,11 +116,18 @@ const getActiveReservations = async (req, res) => {
 
 const getPastReservations = async (req, res) => {
   try {
+    const { labId } = req.params;
+
     const currentTime = new Date();
-    const reservations = await Reservation.find({
+    const query = Reservation.find({
       end_time: { $lt: currentTime },
     });
 
+    if (labId) {
+      query.where({ lab_id: labId });
+    }
+
+    const reservations = await query.exec();
     if (reservations.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -130,11 +144,18 @@ const getPastReservations = async (req, res) => {
 
 const getFutureReservations = async (req, res) => {
   try {
+    const { labId } = req.params;
+
     const currentTime = new Date();
-    const reservations = await Reservation.find({
+    const query = Reservation.find({
       start_time: { $gt: currentTime },
     });
 
+    if (labId) {
+      query.where({ lab_id: labId });
+    }
+
+    const reservations = await query.exec();
     if (reservations.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)

@@ -13,11 +13,11 @@ const {
 } = require("../controllers/reservation.controller");
 
 Router.get("/reservations", getReservations);
+Router.get("/reservations/active/:labId?", getActiveReservations);
+Router.get("/reservations/past/:labId?", getPastReservations);
+Router.get("/reservations/future/:labId?", getFutureReservations);
 Router.get("/reservations/:id", getReservationById);
 Router.post("/reservations", isAuthenticated, createReservation);
-Router.get("/reservations/active", getActiveReservations);
-Router.get("/reservations/past", getPastReservations);
-Router.get("/reservations/future", getFutureReservations);
 Router.delete("/reservations/:id", isAuthenticated, deleteReservation);
 
 module.exports = Router;
