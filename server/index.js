@@ -14,11 +14,13 @@ const start = () => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(
     session({
+      name: "sid",
       secret: process.env.SESSION_SECRET_KEY,
       resave: false,
       saveUninitialized: true,
       cookie: {
         httpOnly: true,
+        secure: false,
         maxAge: 1000 * 60 * 60 * 24, // 1 day
       },
     })
