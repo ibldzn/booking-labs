@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const session = require("express-session");
 const { connectDB } = require("./config/mongodb.connection");
 const app = express();
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 8081;
 const start = () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(cors());
   app.use(
     session({
       name: "sid",
