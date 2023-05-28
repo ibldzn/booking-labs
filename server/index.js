@@ -28,6 +28,7 @@ const start = () => {
   app.use("/api/v1", require("./routes/auth.route"));
   app.use("/api/v1", require("./routes/labs.route"));
   app.use("/api/v1", require("./routes/reservation.route"));
+  app.use("/api/v1", require("./routes/user.route"));
 
   app.get("/laboran", (req, res) => {
     res.json([
