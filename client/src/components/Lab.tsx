@@ -1,7 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ImageCarousel } from "./ImageCarousel";
-import { useParams } from "react-router-dom";
-import { LabsContext } from "../contexts/LabsContext";
+import { Link, useParams } from "react-router-dom";
+import { Button, Input, Typography } from "@material-tailwind/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCalendarAlt,
+  faEdit,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 export interface LabProps {
   _id: string;
@@ -31,16 +37,16 @@ export interface Laboran {
 }
 
 type ReservationType = "past" | "active" | "future";
-
-const getLabNameById = (labs: LabProps[], id: string) => {
-  const lab = labs.find((lab) => lab._id === id);
-  return lab ? lab.name : "";
-};
+type CurrentlyDisplayedItem = "info" | "create-reservation" | "schedule";
 
 const LabInformation = ({ lab }: { lab: LabProps | null }) => {
-  const { id } = useParams();
+  const now = Math.floor(Date.now() / 1000);
+  const [date, setDate] = useState({
+    start: now.toString(),
+    end: (now + 60 * 60).toString(), // 1 hour
+  });
+
   const [laboran, setLaboran] = useState<Laboran[]>([]);
-  const [reserver, setReserver] = useState<Reserver | null>(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/laboran`)
@@ -48,70 +54,111 @@ const LabInformation = ({ lab }: { lab: LabProps | null }) => {
       .then((data) => setLaboran(data));
   }, []);
 
-  useEffect(() => {
-    fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/v1/reservations/active/${id}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (!Array.isArray(data) || data.length === 0) {
-          setReserver(null);
-          return;
-        }
-
-        const { user_id } = data[0];
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/users/${user_id}`)
-          .then((res) => res.json())
-          .then((data) => setReserver(data));
-      });
-  }, [id]);
-
   return (
-    <div className="flex flex-col w-1/2">
+    <div className="flex flex-col w-full items-center justify-center">
       {lab && (
-        <>
+        <div className="w-3/4">
           {lab.images && lab.images.length > 0 ? (
             <ImageCarousel images={lab.images} />
           ) : null}
-          <div className="text-2xl font-bold text-center my-4">{lab.name}</div>
-          <div className="mb-2">
-            <span className="font-bold">Deskripsi: </span>
-            <span>{lab.description}</span>
+          <Typography variant="h3" className="text-center">
+            {lab.name}
+          </Typography>
+          <div className="mt-8 mb-2 grid gap-4 grid-cols-1 md:grid-cols-[2fr_1fr]">
+            <div>
+              <div className="my-4 w-1/2">
+                <h2 className="font-semibold text-2xl">Deskripsi</h2>
+                {lab.description}
+              </div>
+            </div>
+            <form className="flex flex-col">
+              <div className="flex flex-col">
+                <Typography variant="small">Dari</Typography>
+                <Input
+                  type="datetime-local"
+                  color="light-blue"
+                  placeholder="Dari"
+                  value={date.start}
+                  onChange={(e) => setDate({ ...date, start: e.target.value })}
+                />
+              </div>
+              <div className="flex flex-col">
+                <Typography variant="small">Sampai</Typography>
+                <Input
+                  type="datetime-local"
+                  color="light-blue"
+                  placeholder="Sampai"
+                  value={date.end}
+                  onChange={(e) => setDate({ ...date, end: e.target.value })}
+                />
+              </div>
+              <Button type="submit" className="mt-4">
+                Buat Reservasi
+              </Button>
+            </form>
           </div>
           <div className="mb-2">
-            <span className="font-bold">Lokasi: </span>
-            <span>{lab.location}</span>
+            <Typography variant="h4">Lokasi</Typography>
+            <Typography>{lab.location}</Typography>
           </div>
           <div className="mb-2">
-            <span className="font-bold">Laboran: </span>
-            <span>
+            <Typography variant="h4">Laboran</Typography>
+            <Typography>
               {laboran
                 .map((laboran) => `${laboran.name} (${laboran.phone})`)
                 .join(", ")}
-            </span>
+            </Typography>
           </div>
-          <div className="mb-2">
-            <span className="font-bold">Digunakan oleh: </span>
-            <span>{`${
-              reserver ? `Kelas ${reserver.klass} (${reserver.username})` : "-"
-            }`}</span>
-          </div>
-        </>
+        </div>
       )}
     </div>
   );
 };
 
+const Sidebar = ({
+  lab,
+  setCurrentItem,
+}: {
+  lab: LabProps;
+  setCurrentItem: (item: CurrentlyDisplayedItem) => void;
+}) => {
+  return (
+    <div className="min-h-full w-32 p-4 bg-white flex flex-col gap-8">
+      <div
+        onClick={() => setCurrentItem("info")}
+        className="flex flex-col mt-8 mb-2 hover:brightness-90 hover:cursor-pointer"
+      >
+        <FontAwesomeIcon
+          icon={faInfoCircle}
+          className="text-gray-400 text-lg"
+        />
+        <span className="text-xs text-center text-gray-500 mt-2">
+          Informasi Lab
+        </span>
+      </div>
+      <div
+        onClick={() => setCurrentItem("schedule")}
+        className="flex flex-col mb-2 hover:brightness-90 hover:cursor-pointer"
+      >
+        <FontAwesomeIcon
+          icon={faCalendarAlt}
+          className="text-gray-400 text-lg"
+        />
+        <span className="text-xs text-center text-gray-500 mt-2">Jadwal</span>
+      </div>
+    </div>
+  );
+};
+
 const ReservationTable = ({ lab }: { lab: LabProps }) => {
-  const labs = useContext(LabsContext);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [reservationStatus, setReservationStatus] =
     useState<ReservationType>("active");
 
   const TabButton = ({ text = "", selected = false, onClick = () => {} }) => (
     <button
-      className={`px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm dark:text-gray-300 ${
-        selected ? "dark:bg-gray-800" : "bg-gray-900"
+      className={`px-5 py-2 text-xs font-medium text-gray-600 transition-colors duration-200 sm:text-sm ${
+        selected ? "bg-white" : "bg-gray-200"
       }`}
       onClick={() => onClick()}
     >
@@ -133,16 +180,10 @@ const ReservationTable = ({ lab }: { lab: LabProps }) => {
   );
 
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
     fetch(
       `${
         import.meta.env.VITE_API_BASE_URL
-      }/api/v1/reservations/${reservationStatus}/${lab._id}`,
-      {
-        signal,
-      }
+      }/api/v1/reservations/${reservationStatus}/${lab._id}`
     )
       .then((res) => res.json())
       .then((data) => setReservations(data));
@@ -208,21 +249,31 @@ const ReservationTable = ({ lab }: { lab: LabProps }) => {
 export const Lab = () => {
   const { id } = useParams();
   const [lab, setLab] = useState<LabProps | null>(null);
+  const [currentItem, setCurrentItem] =
+    useState<CurrentlyDisplayedItem>("info");
 
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/labs/${id}`, {
-      signal,
-    })
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/labs/${id}`)
       .then((res) => res.json())
       .then((data) => setLab(data));
-
-    return () => {
-      controller.abort();
-    };
   }, [id]);
 
-  return <>{lab ? <ReservationTable lab={lab} /> : null}</>;
+  const component = {
+    info: <LabInformation lab={lab} />,
+    schedule: <ReservationTable lab={lab} />,
+    "create-reservation": <div>Create reservation</div>,
+  };
+
+  return (
+    <div className="flex w-screen h-screen">
+      {lab ? (
+        <>
+          <Sidebar lab={lab} setCurrentItem={setCurrentItem} />
+          <div className="overflow-auto w-full mx-4">
+            {component[currentItem]}
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
 };
