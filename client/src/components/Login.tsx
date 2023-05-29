@@ -1,22 +1,30 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { User } from "../contexts/UserContext";
 import Notification from "./Notification";
+import { Link } from "react-router-dom";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Typography,
+} from "@material-tailwind/react";
 
 export const Login = ({
   setUser,
 }: {
   setUser: (user: User | null) => void;
 }) => {
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const username = usernameRef.current?.value;
-    const password = passwordRef.current?.value;
 
     if (!username || !password) {
+      setError("Please fill all the fields");
       return;
     }
 
@@ -36,8 +44,8 @@ export const Login = ({
       }
     });
 
-    usernameRef.current.value = "";
-    passwordRef.current.value = "";
+    setUsername("");
+    setPassword("");
   };
 
   return (
@@ -49,36 +57,61 @@ export const Login = ({
           onClose={() => setError(null)}
         />
       )}
-      <div className="flex flex-col justify-center items-center bg-[#F7EAE4] h-screen">
-        <img src="/logo-1.jpg" alt="logo" className="w-48 h-48" />
-        <form
-          className="flex flex-col gap-4 w-full h-full px-8 max-w-md"
-          onSubmit={handleSubmit}
+      <Card color="transparent" shadow={false}>
+        <CardHeader
+          className="flex flex-col items-center justify-center"
+          color="transparent"
+          shadow={false}
+          floated={false}
         >
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            className="border-2 border-gray-500 rounded-md p-2"
-            ref={usernameRef}
+          <img
+            src="/logo-1.jpg"
+            alt="logo"
+            className="w-48 h-48 object-cover"
           />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            className="border-2 border-gray-500 rounded-md p-2"
-            ref={passwordRef}
-          />
-          <button
-            type="submit"
-            className="bg-[#F7EAE4] border-2 border-gray-500 rounded-md p-2"
+          <Typography variant="h4" color="blue-gray">
+            Sign In
+          </Typography>
+        </CardHeader>
+        <CardBody>
+          <form
+            className="mb-2 w-80 max-w-screen-lg sm:w-96"
+            onSubmit={handleSubmit}
           >
-            Login
-          </button>
-        </form>
-      </div>
+            <div className="mb-4 flex flex-col gap-6">
+              <Input
+                id="username"
+                size="lg"
+                name="username"
+                label="Username"
+                onChange={(e) => setUsername(e.target.value)}
+                required={true}
+              />
+              <Input
+                id="password"
+                type="password"
+                size="lg"
+                name="password"
+                label="Password"
+                onChange={(e) => setPassword(e.target.value)}
+                required={true}
+              />
+            </div>
+            <Button className="mt-6" fullWidth type="submit">
+              Sign in
+            </Button>
+            <Typography color="gray" className="mt-4 text-center font-normal">
+              Already have an account?{" "}
+              <Link
+                to="/register"
+                className="font-medium text-blue-500 transition-colors hover:text-blue-700"
+              >
+                Sign Up
+              </Link>
+            </Typography>
+          </form>
+        </CardBody>
+      </Card>
     </>
   );
 };
