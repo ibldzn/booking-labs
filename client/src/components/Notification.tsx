@@ -83,7 +83,7 @@ export const Notification = ({
 
   return (
     <div
-      className={`fixed top-0 right-0 mt-8 mr-8 bg-gray-800 text-white rounded-lg transform transition-transform ${
+      className={`z-50 fixed top-0 right-0 mt-8 mr-8 bg-gray-800 text-white rounded-lg transform transition-transform ${
         isVisible ? "translate-x-0" : "translate-x-full"
       }`}
     >
