@@ -12,6 +12,10 @@ const reservationSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  klass: {
+    type: String,
+    required: true,
+  },
   start_time: {
     type: Date,
     required: false,

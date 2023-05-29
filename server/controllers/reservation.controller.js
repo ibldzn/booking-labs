@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const Reservation = require("../models/reservation.model");
 const Lab = require("../models/lab.model");
+const User = require("../models/user.model");
 
 const getReservations = async (req, res) => {
   try {
@@ -73,9 +74,18 @@ const createReservation = async (req, res) => {
         .json({ error: "Lab is already reserved for this time" });
     }
 
+    const user = await User.findById(req.session.userId);
+    // should never happen because of auth middleware
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "User not found" });
+    }
+
     const reservation = await Reservation.create({
       lab_id,
-      user_id: req.session.userId,
+      user_id: user._id,
+      klass: user.klass,
       start_time,
       end_time,
     });
@@ -102,12 +112,6 @@ const getActiveReservations = async (req, res) => {
     }
 
     const reservations = await query.exec();
-    if (reservations.length === 0) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ error: "No active reservations found" });
-    }
-
     return res.status(StatusCodes.OK).json(reservations);
   } catch (err) {
     return res
@@ -130,12 +134,6 @@ const getPastReservations = async (req, res) => {
     }
 
     const reservations = await query.exec();
-    if (reservations.length === 0) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ error: "No past reservations found" });
-    }
-
     return res.status(StatusCodes.OK).json(reservations);
   } catch (err) {
     return res
@@ -158,11 +156,6 @@ const getFutureReservations = async (req, res) => {
     }
 
     const reservations = await query.exec();
-    if (reservations.length === 0) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ error: "No future reservations found" });
-    }
     return res.status(StatusCodes.OK).json(reservations);
   } catch (err) {
     return res
