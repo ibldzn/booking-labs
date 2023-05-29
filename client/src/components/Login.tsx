@@ -57,61 +57,63 @@ export const Login = ({
           onClose={() => setError(null)}
         />
       )}
-      <Card color="transparent" shadow={false}>
-        <CardHeader
-          className="flex flex-col items-center justify-center"
-          color="transparent"
-          shadow={false}
-          floated={false}
-        >
-          <img
-            src="/logo-1.jpg"
-            alt="logo"
-            className="w-48 h-48 object-cover"
-          />
-          <Typography variant="h4" color="blue-gray">
-            Sign In
-          </Typography>
-        </CardHeader>
-        <CardBody>
-          <form
-            className="mb-2 w-80 max-w-screen-lg sm:w-96"
-            onSubmit={handleSubmit}
+      <div className="flex items-center justify-center">
+        <Card color="transparent" shadow={false}>
+          <CardHeader
+            className="flex flex-col items-center justify-center"
+            color="transparent"
+            shadow={false}
+            floated={false}
           >
-            <div className="mb-4 flex flex-col gap-6">
-              <Input
-                id="username"
-                size="lg"
-                name="username"
-                label="Username"
-                onChange={(e) => setUsername(e.target.value)}
-                required={true}
-              />
-              <Input
-                id="password"
-                type="password"
-                size="lg"
-                name="password"
-                label="Password"
-                onChange={(e) => setPassword(e.target.value)}
-                required={true}
-              />
-            </div>
-            <Button className="mt-6" fullWidth type="submit">
-              Sign in
-            </Button>
-            <Typography color="gray" className="mt-4 text-center font-normal">
-              Belum punya akun?{" "}
-              <Link
-                to="/register"
-                className="font-medium text-blue-500 transition-colors hover:text-blue-700"
-              >
-                Sign Up
-              </Link>
+            <img
+              src="/logo-1.jpg"
+              alt="logo"
+              className="w-48 h-48 object-cover"
+            />
+            <Typography variant="h4" color="blue-gray">
+              Sign In
             </Typography>
-          </form>
-        </CardBody>
-      </Card>
+          </CardHeader>
+          <CardBody>
+            <form
+              className="mb-2 w-80 max-w-screen-lg sm:w-96"
+              onSubmit={handleSubmit}
+            >
+              <div className="mb-4 flex flex-col gap-6">
+                <Input
+                  id="username"
+                  size="lg"
+                  name="username"
+                  label="Username"
+                  onChange={(e) => setUsername(e.target.value)}
+                  required={true}
+                />
+                <Input
+                  id="password"
+                  type="password"
+                  size="lg"
+                  name="password"
+                  label="Password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required={true}
+                />
+              </div>
+              <Button className="mt-6" fullWidth type="submit">
+                Sign in
+              </Button>
+              <Typography color="gray" className="mt-4 text-center font-normal">
+                Belum punya akun?{" "}
+                <Link
+                  to="/register"
+                  className="font-medium text-blue-500 transition-colors hover:text-blue-700"
+                >
+                  Sign Up
+                </Link>
+              </Typography>
+            </form>
+          </CardBody>
+        </Card>
+      </div>
     </>
   );
 };
