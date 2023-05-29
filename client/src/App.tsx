@@ -10,17 +10,15 @@ import {
   Navigate,
 } from "react-router-dom";
 import { LabsActivity } from "./components/LabsActivity";
-import { Lab } from "./components/Lab";
+import { Lab, LabProps } from "./components/Lab";
+import { LabsContext } from "./contexts/LabsContext";
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
+  const [labs, setLabs] = useState<LabProps[]>([]);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/me`, {
-      signal,
       credentials: "include",
     })
       .then((res) => res.json())
@@ -31,20 +29,23 @@ function App() {
           setUser(null);
         }
       });
+  }, []);
 
-    return () => {
-      controller.abort();
-    };
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/labs`)
+      .then((res) => res.json())
+      .then((data) => setLabs(data));
   }, []);
 
   return (
-    <UserContext.Provider value={user}>
-      <div className="w-screen h-screen">
-        <Navbar />
-        <div className="bg-[#F7EAE4] w-full h-full flex justify-center">
-          <Router>
+    <Router>
+      <UserContext.Provider value={user}>
+        <LabsContext.Provider value={labs}>
+          <div className="bg-[#F7EAE4] min-w-screen min-h-screen">
+            <Navbar />
             <Routes>
               <Route path="/" element={<LabsActivity />} />
+              <Route path="/activities" element={<LabsActivity />} />
               <Route
                 path="/login"
                 element={
@@ -53,11 +54,12 @@ function App() {
               />
               <Route path="/register" element={<Register />} />
               <Route path="/labs/:id" element={<Lab />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
-          </Router>
-        </div>
-      </div>
-    </UserContext.Provider>
+          </div>
+        </LabsContext.Provider>
+      </UserContext.Provider>
+    </Router>
   );
 }
 
