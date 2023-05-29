@@ -1,8 +1,6 @@
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
-import { LabProps } from "./Lab";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { LabsContext } from "../contexts/LabsContext";
 
 interface ReservedLab {
   _id: string;
@@ -11,22 +9,8 @@ interface ReservedLab {
 }
 
 export const LabsActivity = () => {
-  const [labs, setLabs] = useState<LabProps[]>([]);
+  const labs = useContext(LabsContext);
   const [reservedLabIds, setReservedLabIds] = useState<string[]>([]);
-  const [selectedLab, setSelectedLab] = useState<LabProps | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/labs`, { signal })
-      .then((res) => res.json())
-      .then((data) => setLabs(data));
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -67,19 +51,6 @@ export const LabsActivity = () => {
                 } hover:brightness-90 overflow-y-auto`}
               >
                 {lab.name}
-                <div
-                  className="absolute top-0 right-0 p-2 cursor-pointer"
-                  onClick={() =>
-                    setSelectedLab(selectedLab === lab ? null : lab)
-                  }
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} className="text-white" />
-                </div>
-                {selectedLab === lab && lab.used_by && (
-                  <div className="absolute top-0 right-0 bg-gray-200 text-gray-800 p-2 rounded-md">
-                    Used by {lab.used_by}
-                  </div>
-                )}
               </Link>
             ))}
       </div>
