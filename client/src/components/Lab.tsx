@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ImageCarousel } from "./ImageCarousel";
-import { Link, useParams } from "react-router-dom";
-import { Button, Input, Typography } from "@material-tailwind/react";
+import { useParams } from "react-router-dom";
+import { Typography } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendarAlt,
-  faEdit,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { ReservationWidget } from "./ReservationWidget";
+import { UserContext } from "../contexts/UserContext";
+import Notification from "./Notification";
 
 export interface LabProps {
   _id: string;
@@ -40,12 +39,6 @@ type ReservationType = "past" | "active" | "future";
 type CurrentlyDisplayedItem = "info" | "create-reservation" | "schedule";
 
 const LabInformation = ({ lab }: { lab: LabProps | null }) => {
-  const now = Math.floor(Date.now() / 1000);
-  const [date, setDate] = useState({
-    start: now.toString(),
-    end: (now + 60 * 60).toString(), // 1 hour
-  });
-
   const [laboran, setLaboran] = useState<Laboran[]>([]);
 
   useEffect(() => {
@@ -71,31 +64,7 @@ const LabInformation = ({ lab }: { lab: LabProps | null }) => {
                 {lab.description}
               </div>
             </div>
-            <form className="flex flex-col">
-              <div className="flex flex-col">
-                <Typography variant="small">Dari</Typography>
-                <Input
-                  type="datetime-local"
-                  color="light-blue"
-                  placeholder="Dari"
-                  value={date.start}
-                  onChange={(e) => setDate({ ...date, start: e.target.value })}
-                />
-              </div>
-              <div className="flex flex-col">
-                <Typography variant="small">Sampai</Typography>
-                <Input
-                  type="datetime-local"
-                  color="light-blue"
-                  placeholder="Sampai"
-                  value={date.end}
-                  onChange={(e) => setDate({ ...date, end: e.target.value })}
-                />
-              </div>
-              <Button type="submit" className="mt-4">
-                Buat Reservasi
-              </Button>
-            </form>
+            <ReservationWidget lab={lab} />
           </div>
           <div className="mb-2">
             <Typography variant="h4">Lokasi</Typography>
@@ -116,10 +85,8 @@ const LabInformation = ({ lab }: { lab: LabProps | null }) => {
 };
 
 const Sidebar = ({
-  lab,
   setCurrentItem,
 }: {
-  lab: LabProps;
   setCurrentItem: (item: CurrentlyDisplayedItem) => void;
 }) => {
   return (
@@ -151,6 +118,8 @@ const Sidebar = ({
 };
 
 const ReservationTable = ({ lab }: { lab: LabProps }) => {
+  const user = useContext(UserContext);
+  const [message, setMessage] = useState<string | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [reservationStatus, setReservationStatus] =
     useState<ReservationType>("active");
@@ -179,6 +148,22 @@ const ReservationTable = ({ lab }: { lab: LabProps }) => {
     </td>
   );
 
+  const deleteReservation = (reservationId: string) => {
+    fetch(
+      `${
+        import.meta.env.VITE_API_BASE_URL
+      }/api/v1/reservations/${reservationId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    ).then((res) =>
+      res.ok
+        ? setReservations(reservations.filter((r) => r._id !== reservationId))
+        : setMessage("Gagal menghapus reservasi")
+    );
+  };
+
   useEffect(() => {
     fetch(
       `${
@@ -190,59 +175,80 @@ const ReservationTable = ({ lab }: { lab: LabProps }) => {
   }, [reservationStatus]);
 
   return (
-    <section className="container px-4 mx-auto">
-      <div className="mt-6 md:flex md:items-center md:justify-between">
-        <div className="inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700">
-          <TabButton
-            text="Active"
-            selected={reservationStatus === "active"}
-            onClick={() => setReservationStatus("active")}
-          />
-          <TabButton
-            text="Past"
-            selected={reservationStatus === "past"}
-            onClick={() => setReservationStatus("past")}
-          />
-          <TabButton
-            text="Upcoming"
-            selected={reservationStatus === "future"}
-            onClick={() => setReservationStatus("future")}
-          />
+    <>
+      {message && (
+        <Notification
+          type="error"
+          message={message}
+          onClose={() => setMessage(null)}
+        />
+      )}
+      <section className="container px-4 mx-auto">
+        <div className="mt-6 md:flex md:items-center md:justify-between">
+          <div className="inline-flex overflow-hidden bg-white border divide-x rounded-lg dark:bg-gray-900 rtl:flex-row-reverse dark:border-gray-700 dark:divide-gray-700">
+            <TabButton
+              text="Active"
+              selected={reservationStatus === "active"}
+              onClick={() => setReservationStatus("active")}
+            />
+            <TabButton
+              text="Past"
+              selected={reservationStatus === "past"}
+              onClick={() => setReservationStatus("past")}
+            />
+            <TabButton
+              text="Upcoming"
+              selected={reservationStatus === "future"}
+              onClick={() => setReservationStatus("future")}
+            />
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col mt-6">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <TH text="No" />
-                    <TH text="Lab" />
-                    <TH text="Kelas" />
-                    <TH text="Waktu Mulai" />
-                    <TH text="Waktu Selesai" />
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                  {reservations.map((reservation, index) => (
-                    <tr key={reservation._id}>
-                      <TD>{index + 1}</TD>
-                      <TD>{lab.name}</TD>
-                      <TD>{reservation.klass}</TD>
-                      <TD>
-                        {new Date(reservation.start_time).toLocaleString()}
-                      </TD>
-                      <TD>{new Date(reservation.end_time).toLocaleString()}</TD>
+        <div className="flex flex-col mt-6">
+          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+              <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <TH text="No" />
+                      <TH text="Lab" />
+                      <TH text="Kelas" />
+                      <TH text="Waktu Mulai" />
+                      <TH text="Waktu Selesai" />
+                      <TH text="Aksi" />
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
+                    {reservations.map((reservation, index) => (
+                      <tr key={reservation._id}>
+                        <TD>{index + 1}</TD>
+                        <TD>{lab.name}</TD>
+                        <TD>{reservation.klass}</TD>
+                        <TD>
+                          {new Date(reservation.start_time).toLocaleString()}
+                        </TD>
+                        <TD>
+                          {new Date(reservation.end_time).toLocaleString()}
+                        </TD>
+                        <TD>
+                          <button
+                            disabled={reservation.user_id !== user?._id}
+                            onClick={() => deleteReservation(reservation._id)}
+                            className="px-2 py-1 text-xs font-medium text-white transition-colors duration-200 transform bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600"
+                          >
+                            Hapus
+                          </button>
+                        </TD>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 
@@ -268,7 +274,7 @@ export const Lab = () => {
     <div className="flex w-screen h-screen">
       {lab ? (
         <>
-          <Sidebar lab={lab} setCurrentItem={setCurrentItem} />
+          <Sidebar setCurrentItem={setCurrentItem} />
           <div className="overflow-auto w-full mx-4">
             {component[currentItem]}
           </div>

@@ -1,16 +1,34 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { User, UserContext } from "../contexts/UserContext";
 
-export const Navbar = () => {
+export interface NavbarProps {
+  setUser: (user: User | null) => void;
+}
+
+export const Navbar = ({ setUser }: NavbarProps) => {
+  const navigate = useNavigate();
+  const user = useContext(UserContext);
   const [showBurger, setShowBurger] = useState(false);
+
+  const logout = () => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    }).then(() => {
+      setUser(null);
+      navigate("/");
+    });
+  };
 
   return (
     <nav className="w-full bg-white shadow">
       <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
-            <a href="/">
-              <img src="/logo-2.jpg" alt="logo" className="w-12 h-12" />
-            </a>
+            <Link to="/">
+              <img src="/logo-2.jpg" alt="logo" className="w-12 h-12 mt-2" />
+            </Link>
             <div className="md:hidden">
               <button
                 className="p-2 text-gray-700 rounded-md outline-none focus:border-gray-400 focus:border"
@@ -57,13 +75,22 @@ export const Navbar = () => {
           >
             <ul className="items-center justify-center space-y-8 md:flex md:space-x-6 md:space-y-0">
               <li className="text-gray-600 hover:text-blue-600">
-                <a href="/">Home</a>
+                <Link to="/">Home</Link>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
-                <a href="#">Aktifitas Lab</a>
+                <Link to="/activities">Aktifitas Lab</Link>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
-                <a href="#">Jadwal</a>
+                <Link to="/schedule">Jadwal</Link>
+              </li>
+              <li className="text-gray-600 hover:text-blue-600">
+                {user ? (
+                  <span onClick={logout} className="hover:cursor-pointer">
+                    Logout
+                  </span>
+                ) : (
+                  <Link to="/login">Login</Link>
+                )}
               </li>
             </ul>
           </div>

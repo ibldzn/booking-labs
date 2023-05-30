@@ -42,7 +42,7 @@ function App() {
       <UserContext.Provider value={user}>
         <LabsContext.Provider value={labs}>
           <div className="bg-[#F7EAE4] min-w-screen min-h-screen">
-            <Navbar />
+            <Navbar setUser={setUser} />
             <Routes>
               <Route path="/" element={<LabsActivity />} />
               <Route path="/activities" element={<LabsActivity />} />
