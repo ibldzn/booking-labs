@@ -30,6 +30,7 @@ services:
       - ./server/.env
     ports:
       - 8081:8081
+      - 9229:9229
     volumes:
       - ./server:/app
     depends_on:
