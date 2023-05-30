@@ -26,7 +26,7 @@ const LabCard = ({
   return (
     <Link
       to={`/labs/${lab._id}`}
-      className="hover:cursor-pointer hover:brightness-90"
+      className="hover:cursor-pointer hover:brightness-90 line-clamp-2"
     >
       <Card
         className={`w-64 h-36 ${isReserved ? "bg-red-500" : "bg-green-500"}`}
