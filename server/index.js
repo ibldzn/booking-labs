@@ -13,21 +13,8 @@ const PORT = process.env.PORT || 8081;
 const start = () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(cookieParser(process.env.SESSION_SECRET_KEY));
+  app.use(cookieParser());
   app.use(cors());
-  app.use(
-    session({
-      name: "sid",
-      secret: process.env.SESSION_SECRET_KEY,
-      resave: false,
-      saveUninitialized: true,
-      cookie: {
-        httpOnly: true,
-        secure: false,
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
-      },
-    })
-  );
   app.use(express.json({ extended: false }));
 
   app.use("/api/v1", require("./routes/auth.route"));

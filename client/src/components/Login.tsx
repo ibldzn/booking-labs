@@ -33,6 +33,7 @@ export const Login = ({
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ username, password }),
     }).then(async (res) => {
       if (res.ok) {

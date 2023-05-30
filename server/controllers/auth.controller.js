@@ -54,10 +54,20 @@ const login = async (req, res) => {
         .json({ message: "Invalid credentials" });
     }
 
-    req.session.userId = user._id;
-    res.status(StatusCodes.OK).json({ user });
+    const jwt = require("jsonwebtoken");
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
+
+    return res
+      .status(StatusCodes.OK)
+      .cookie("token", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .json({ user, token });
   } catch (error) {
-    res
+    return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
   }
@@ -65,7 +75,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    req.session.destroy();
+    res.clearCookie("token");
     res.status(StatusCodes.OK).json({ message: "Logged out" });
   } catch (error) {
     res
@@ -76,13 +86,13 @@ const logout = async (req, res) => {
 
 const me = async (req, res) => {
   try {
-    if (!req.session.userId) {
+    if (!req.userId) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
         .json({ message: "Not logged in" });
     }
 
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.userId);
     if (!user) {
       return res
         .status(StatusCodes.NOT_FOUND)

@@ -74,7 +74,7 @@ const createReservation = async (req, res) => {
         .json({ error: "Lab is already reserved for this time" });
     }
 
-    const user = await User.findById(req.session.userId);
+    const user = await User.findById(req.userId);
     // should never happen because of auth middleware
     if (!user) {
       return res
@@ -173,7 +173,7 @@ const deleteReservation = async (req, res) => {
         .json({ error: "Reservation not found" });
     }
 
-    const userId = req.session.userId;
+    const userId = req.userId;
     const reservationUserId = reservation.user_id.toString();
     if (reservationUserId !== userId) {
       return res
