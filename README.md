@@ -4,7 +4,7 @@ Cara menjalankan:
 
 ## Sebelumnya
 
-1. Pastikan port 8080 dan 3000 tidak digunakan oleh aplikasi lain
+1. Pastikan port 8080, 8081, 9000 (jika menggunakan Docker) tidak digunakan oleh aplikasi lain
 2. Pastikan Docker sudah terinstall (jika menggunakan Docker)
 3. Update file .env.example menjadi .env di direktori server
 4. Isi .env dengan data yang dibutuhkan
