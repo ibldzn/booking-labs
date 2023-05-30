@@ -148,22 +148,6 @@ const ReservationTable = ({ lab }: { lab: LabProps }) => {
     </td>
   );
 
-  const deleteReservation = (reservationId: string) => {
-    fetch(
-      `${
-        import.meta.env.VITE_API_BASE_URL
-      }/api/v1/reservations/${reservationId}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      }
-    ).then((res) =>
-      res.ok
-        ? setReservations(reservations.filter((r) => r._id !== reservationId))
-        : setMessage("Gagal menghapus reservasi")
-    );
-  };
-
   useEffect(() => {
     fetch(
       `${
@@ -215,7 +199,6 @@ const ReservationTable = ({ lab }: { lab: LabProps }) => {
                       <TH text="Kelas" />
                       <TH text="Waktu Mulai" />
                       <TH text="Waktu Selesai" />
-                      <TH text="Aksi" />
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
@@ -229,15 +212,6 @@ const ReservationTable = ({ lab }: { lab: LabProps }) => {
                         </TD>
                         <TD>
                           {new Date(reservation.end_time).toLocaleString()}
-                        </TD>
-                        <TD>
-                          <button
-                            disabled={reservation.user_id !== user?._id}
-                            onClick={() => deleteReservation(reservation._id)}
-                            className="px-2 py-1 text-xs font-medium text-white transition-colors duration-200 transform bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600"
-                          >
-                            Hapus
-                          </button>
                         </TD>
                       </tr>
                     ))}
