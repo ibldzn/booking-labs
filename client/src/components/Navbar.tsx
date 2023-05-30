@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, UserContext } from "../contexts/UserContext";
+import { ProfileMenu } from "./ProfileMenu";
 
 export interface NavbarProps {
   setUser: (user: User | null) => void;
@@ -84,13 +85,7 @@ export const Navbar = ({ setUser }: NavbarProps) => {
                 <Link to="/schedule">Jadwal</Link>
               </li>
               <li className="text-gray-600 hover:text-blue-600">
-                {user ? (
-                  <span onClick={logout} className="hover:cursor-pointer">
-                    Logout
-                  </span>
-                ) : (
-                  <Link to="/login">Login</Link>
-                )}
+                <ProfileMenu user={user} logout={logout} />
               </li>
             </ul>
           </div>
