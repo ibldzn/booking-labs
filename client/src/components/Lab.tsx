@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ImageCarousel } from "./ImageCarousel";
 import { useParams } from "react-router-dom";
 import { Typography } from "@material-tailwind/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { ReservationWidget } from "./ReservationWidget";
-import { UserContext } from "../contexts/UserContext";
 import Notification from "./Notification";
 
 export interface LabProps {
@@ -118,7 +117,6 @@ const Sidebar = ({
 };
 
 const ReservationTable = ({ lab }: { lab: LabProps }) => {
-  const user = useContext(UserContext);
   const [message, setMessage] = useState<string | null>(null);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [reservationStatus, setReservationStatus] =
@@ -240,7 +238,7 @@ export const Lab = () => {
 
   const component = {
     info: <LabInformation lab={lab} />,
-    schedule: <ReservationTable lab={lab} />,
+    schedule: <ReservationTable lab={lab!} />,
     "create-reservation": <div>Create reservation</div>,
   };
 
