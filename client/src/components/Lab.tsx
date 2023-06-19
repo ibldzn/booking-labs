@@ -58,7 +58,7 @@ const LabInformation = ({ lab }: { lab: LabProps | null }) => {
           </Typography>
           <div className="mt-8 mb-2 grid gap-4 grid-cols-1 md:grid-cols-[2fr_1fr]">
             <div>
-              <div className="my-4 w-1/2">
+              <div className="my-4 w-full sm:w-1/2">
                 <h2 className="font-semibold text-2xl">Deskripsi</h2>
                 {lab.description}
               </div>
