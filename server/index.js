@@ -11,10 +11,10 @@ const app = express();
 const PORT = process.env.PORT || 8081;
 
 const start = () => {
+  app.use(cors(corsOptions));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
-  app.use(cors(corsOptions));
   app.use(express.json({ extended: false }));
 
   app.use("/api/v1", require("./routes/auth.route"));
