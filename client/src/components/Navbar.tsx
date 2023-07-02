@@ -86,6 +86,13 @@ export const Navbar = ({ setUser }: NavbarProps) => {
               <li className="text-gray-600 hover:text-blue-600">
                 <ProfileMenu logout={logout} />
               </li>
+              <div className="flex">
+                <img
+                  src={`/logo-1.png`}
+                  alt="logo"
+                  className="w-12 h-12"
+                />
+              </div>
             </ul>
           </div>
         </div>
